@@ -1,0 +1,6 @@
+---
+# tasks file for init-ldap-users
+
+- import_tasks: init.yml
+- import_tasks: create-sample-users.yml
+

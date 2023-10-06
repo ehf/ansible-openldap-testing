@@ -1,0 +1,41 @@
+---
+# tasks file for setup-user-home
+#
+
+# setup test dev users 
+# all intermediate subdirectories will be created if they do not exist
+- name: "create home dir for sample test dev users"
+  file:
+    path: "/home/testdev{{ item }}/.ssh"
+    owner: testdev{{ item }}
+    group: testdevs
+    mode: '0700'
+    state: directory
+  loop: "{{ range(1,10,1) | list }}"
+  tags:
+    - create-testdev-home-dirs
+
+- name: "create ssh priv/pub keys for sample test dev users"
+  openssh_keypair:
+    path: "/home/testdev{{ item }}/.ssh/id_ed25519"
+    owner: testdev{{ item }}
+    group: testdevs
+    mode: '0600' 
+    type: ed25519
+    comment: testdev{{ item }}
+  loop: "{{ range(1,10,1) | list }}"
+  tags:
+    - create-testdev-ssh-keys
+
+- name: "create simulated totp files"
+  copy:
+    dest: "/home/testdev{{ item }}/.ssh/totp"
+    content: "testdev{{ item }}"
+    owner: testdev{{ item }}
+    group: testdevs
+    mode: '0600'
+  loop: "{{ range(1,10,1) | list }}"
+  tags:
+    - create-testdev-totp
+    
+

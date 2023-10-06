@@ -1,0 +1,31 @@
+--- 
+
+# this will run on host containing pubkeys in user home dirs
+# look for all pubkeys under home dir
+- name: "find ssh public key files"
+  find:
+    paths: /home
+    patterns: "^id_.*pub$"
+    use_regex: yes
+    file_type: file
+    recurse: yes
+    excludes: "mysql,nginx"
+  register: sshpubkeys_found
+  tags:
+    - get-ssh-publickey
+
+- name: "debug sshpubkeys_found"
+  debug:
+    msg: "{{ item }}"
+  loop: "{{ sshpubkeys_found.files }}"
+  tags:
+    - get-ssh-publickey
+
+- name: "fetch pub keys"
+  fetch:
+    src: "{{ item.path }}"
+    dest: /tmp/fetched/pubkeys
+  loop: "{{ sshpubkeys_found.files }}"
+  tags:
+    - get-ssh-publickey
+

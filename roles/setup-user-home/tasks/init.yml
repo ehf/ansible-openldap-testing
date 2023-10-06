@@ -1,0 +1,25 @@
+---
+# tasks file for setup-user-home
+#
+
+# all intermediate subdirectories will be created if they do not exist
+- name: "create home dir"
+  file:
+    path: /home/user1/.ssh
+    owner: user1
+    group: usergrp1
+    mode: '0700'
+    state: directory
+  tags:
+    - create-home-dir
+
+- name: "copy test9 totp"
+  copy:
+    src: totp.test9
+    dest: /home/user1/.ssh/totp
+    owner: user1
+    group: usergrp1
+    mode: '0400'
+  tags:
+    - copy-totp
+

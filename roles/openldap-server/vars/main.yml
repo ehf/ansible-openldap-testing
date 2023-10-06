@@ -1,0 +1,18 @@
+---
+
+env:
+ RUNLEVEL: 1
+
+
+#The domain prefix for ldap
+openldap_server_domain_name: "{{ ldap_domain_name }}"
+
+#This is the password for admin for openldap
+openldap_server_rootpw: "{{ ldap_auth.bind_pw }}"
+
+#The self signed ssl parameters
+openldap_server_country: US
+openldap_server_state: California
+openldap_server_location: Los Angeles
+openldap_server_organization: IT
+

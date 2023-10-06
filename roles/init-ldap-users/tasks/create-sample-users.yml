@@ -1,0 +1,60 @@
+---
+# tasks file for init-ldap-users
+
+# The below requirements are needed on the host that executes this module.
+# - python3-ldap
+
+# create sample set of users 
+- name: "Create test dev group"
+  ldap_entry:
+    dn: cn=testdevs,ou=Groups,{{ ldap_search_base }}
+    objectClass:
+      - top
+      - posixGroup
+    attributes:
+      gidNumber: 1112
+    bind_dn: "{{ ldap_auth.bind_dn }}"
+    bind_pw: "{{ ldap_auth.bind_pw }}"
+
+- name: "Create test dev users"
+  ldap_entry:
+    dn: uid=testdev{{ ansible_loop.index }},ou=People,{{ ldap_search_base }}
+    objectClass:
+      - top
+      - account
+      - posixAccount
+      - shadowAccount
+      - ldapPublicKey
+      - hostObject
+    attributes:
+      cn: "testdev{{ ansible_loop.index }}"
+      uid: "testdev{{ ansible_loop.index }}"
+      uidNumber: "{{ item }}"
+      gidNumber: "1112"
+      homeDirectory: "/home/testdev{{ ansible_loop.index }}"
+      loginShell: "/bin/bash"
+      gecos: "testdev{{ ansible_loop.index }}"
+      userPassword: "{{ testdev_ssha }}"
+      shadowLastChange: 0
+      shadowMax: 0
+      shadowWarning: 0
+    bind_dn: "{{ ldap_auth.bind_dn }}"
+    bind_pw: "{{ ldap_auth.bind_pw }}"
+  loop: "{{ range(1112,1122,1) | list }}"
+  loop_control:
+    extended: true
+    extended_allitems: false
+
+# add host attribute to some users 
+- name: "add host attribute to some users"
+  ldap_attrs:
+    dn: uid=testdev{{ ansible_loop.index }},ou=People,{{ ldap_search_base }}
+    attributes:
+      host: "testdev{{ range(1,5) | random }}"
+    bind_dn: "{{ ldap_auth.bind_dn }}"
+    bind_pw: "{{ ldap_auth.bind_pw }}"
+  loop: "{{ range(1112,1122,1) | list }}"
+  loop_control:
+    extended: true
+    extended_allitems: false
+

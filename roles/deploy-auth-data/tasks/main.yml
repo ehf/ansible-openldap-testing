@@ -1,0 +1,7 @@
+---
+# tasks file for deploy-auth-data
+#
+
+- import_tasks: update-ldap.yml
+- import_tasks: distribute-totp-files.yml
+

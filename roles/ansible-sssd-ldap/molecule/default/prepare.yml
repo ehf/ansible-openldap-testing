@@ -1,0 +1,31 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: true
+  become: true
+
+  vars:
+    openssh_clients:
+      Debian: openssh-client
+      RedHat: openssh-clients
+
+  tasks:
+    - name: create /root/.ssh dir
+      file:
+        path: /root/.ssh
+        state: directory
+        mode: 0755
+    - name: copy ssh key
+      copy:
+        src: test.key
+        dest: /root/.ssh/id_rsa
+        mode: 0600
+        owner: root
+        group: root
+    - name: enable login
+      file:
+        path: /run/nologin
+        state: absent
+    - name: install ssh client
+      package:
+        name: "{{ openssh_clients[ansible_os_family] }}"

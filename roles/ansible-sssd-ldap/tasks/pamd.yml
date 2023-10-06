@@ -1,0 +1,13 @@
+---
+- name: pamd | add pam_mkhomedir for Debian machines
+  copy:
+    src: pam_mkhomedir
+    dest: /usr/share/pam-configs/sssd_mkhomedir
+  when: ansible_os_family == "Debian"
+  notify:
+    - run pam auth update
+
+- name: pamd | add pam_mkhomedir for RedHat machines
+  command: /usr/sbin/authconfig --enablemkhomedir --update
+  changed_when: false
+  when: ansible_os_family == "RedHat"

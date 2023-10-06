@@ -1,0 +1,31 @@
+---
+# vars file for sssd_ldap
+#
+
+sssd_domain_defaults:
+  min_id: 1000
+  max_id: 3000
+  id_provider: ldap
+  auth_provider: ldap
+  enumerate: 'false'
+  ldap_uri: "ldap://{{ ldap_uri_host }}"
+  ldap_id_use_start_tls: 'false'
+  ldap_tls_reqcert: never
+  ldap_default_bind_dn: "{{ ldap_default_bind_dn }}"
+  ldap_default_authtok_type: password
+  ldap_default_authtok: "{{ ldap_default_authtok }}"
+  ldap_search_base: "{{ ldap_search_base }}"
+
+sssd_domains:
+  - name: LDAP
+    min_id: "{{ sssd_domain_defaults.min_id }}"
+    max_id: "{{ sssd_domain_defaults.max_id }}"
+    id_provider: "{{ sssd_domain_defaults.id_provider }}"
+    auth_provider: "{{ sssd_domain_defaults.auth_provider }}"
+    ldap_uri: "{{ sssd_domain_defaults.ldap_uri }}"
+    ldap_id_use_start_tls: "{{ sssd_domain_defaults.ldap_id_use_start_tls }}"
+    ldap_tls_reqcert: "{{ sssd_domain_defaults.ldap_tls_reqcert }}"
+    ldap_default_bind_dn: "{{ sssd_domain_defaults.ldap_default_bind_dn }}"
+    ldap_default_authtok_type: "{{ sssd_domain_defaults.ldap_default_authtok_type }}"
+    ldap_default_authtok: "{{ sssd_domain_defaults.ldap_default_authtok }}"
+    ldap_search_base: "{{ sssd_domain_defaults.ldap_search_base }}"

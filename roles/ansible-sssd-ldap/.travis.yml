@@ -1,0 +1,12 @@
+---
+language: python
+
+services:
+  - docker
+
+branches:
+  only:
+    - master
+
+script:
+  - ./run_tests.sh

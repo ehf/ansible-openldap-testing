@@ -1,0 +1,30 @@
+--- 
+
+- name: "find totp files"
+  find:
+    paths: /home
+    patterns: "^totp$"
+    use_regex: yes
+    file_type: file
+    recurse: yes
+    excludes: "mysql,nginx"
+  register: totpfiles_found
+  tags:
+    - get-totp-files
+
+- name: "debug totpfiles_found"
+  debug:
+    msg: "{{ item }}"
+  loop: "{{ totpfiles_found.files }}"
+  tags:
+    - get-totp-files
+
+- name: "fetch totp files"
+  fetch:
+    src: "{{ item.path }}"
+    dest: /tmp/fetched/totp
+  loop: "{{ totpfiles_found.files }}"
+  tags:
+    - get-totp-files
+
+

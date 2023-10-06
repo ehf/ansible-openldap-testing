@@ -1,0 +1,7 @@
+---
+
+# installed role and then made changes: 
+# $ ansible-galaxy role install bennojoy.openldap_server
+
+- import_tasks: install_ldap.yml
+- import_tasks: configure_ldap.yml

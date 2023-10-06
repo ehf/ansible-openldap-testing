@@ -1,0 +1,58 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint: |
+  set -e
+  yamllint -c molecule/default/.yamllint .
+platforms:
+  - name: ubuntu-trusty
+    image: ubuntu-upstart
+    command: /sbin/init
+    privileged: True
+    links:
+      - "openldap:openldap"
+  - name: ubuntu-xenial
+    image: solita/ubuntu-systemd
+    command: /sbin/init
+    privileged: True
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    links:
+      - "openldap:openldap"
+  - name: centos-7
+    image: centos/systemd
+    command: /usr/sbin/init
+    privileged: True
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    capabilities:
+      - SYS_ADMIN
+    links:
+      - "openldap:openldap"
+provisioner:
+  name: ansible
+  inventory:
+    group_vars:
+      all:
+        sssd_domains:
+          - name: default
+            ldap_uri: ldap://openldap
+            ldap_search_base: dc=example,dc=org?subtree?(uidNumber=5000)
+            ldap_default_bind_dn: cn=admin,dc=example,dc=org
+            ldap_default_authtok: s3cr3t
+            ldap_user_ssh_public_key: sshPublicKey
+            override_gid: 1
+  lint: |
+    set -e
+    ansible-lint -x ANSIBLE0013
+scenario:
+  name: default
+verifier:
+  name: testinfra
+  lint: |
+    set -e
+    flake8

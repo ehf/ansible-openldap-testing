@@ -1,0 +1,31 @@
+---
+
+# ansible-playbook -i inventory.txt run-it.yml -b -u ehf --vault-password-file ~/.ogpw
+# ansible-playbook -i inventory.txt run-it.yml -b -u ehf --ask-vault-pass
+#
+#  ldapsearch -x -b 'dc=usdata,dc=link' '(objectclass=*)'
+#
+
+
+- hosts: openldap_server
+  gather_facts: True
+  roles:
+    - { role: openldap-server, tags: init-openldap-server }
+    - { role: init-ldap-users, tags: init-ldap-users, delegate_to: testdev1 }
+
+- hosts: sssd_client
+  gather_facts: True
+  roles:
+    - { role: totp, tags: init-totp }
+    - { role: ansible-sssd-ldap, tags: init-sssd-ldap }
+    - { role: setup-user-home, tags: setup-user-home }
+
+- hosts: testdev2
+  gather_facts: True
+  roles:
+    - { role: fetch-auth-data, tags: fetch-auth-data }
+
+#- hosts: testdev1,testdev2
+#  gather_facts: True
+#  roles:
+#    - { role: deploy-auth-data, tags: deploy-auth-data }

@@ -1,0 +1,63 @@
+---
+# tasks file for init-ldap-users
+
+# The below requirements are needed on the host that executes this module.
+# - python3-ldap
+
+- name: install python3-ldap pkg
+  dnf: 
+    name: python3-ldap 
+    state: present
+
+- name: Create parent entry for Users
+  ldap_entry:
+    dn: ou=People,{{ ldap_search_base }}
+    objectClass: organizationalUnit
+    bind_dn: "{{ ldap_auth.bind_dn }}" 
+    bind_pw: "{{ ldap_auth.bind_pw }}" 
+
+- name: Create parent entry for Groups
+  ldap_entry:
+    dn: ou=Groups,{{ ldap_search_base }}
+    objectClass: organizationalUnit
+    bind_dn: "{{ ldap_auth.bind_dn }}" 
+    bind_pw: "{{ ldap_auth.bind_pw }}" 
+
+- name: Create user group 
+  ldap_entry: 
+    dn: cn=usergrp1,ou=Groups,{{ ldap_search_base }}
+    objectClass: 
+      - top
+      - posixGroup
+    attributes:
+      gidNumber: 1111
+    bind_dn: "{{ ldap_auth.bind_dn }}" 
+    bind_pw: "{{ ldap_auth.bind_pw }}" 
+
+- name: Create test user
+  ldap_entry:
+    dn: uid=user1,ou=People,{{ ldap_search_base }}
+    objectClass:
+      - top
+      - account
+      - posixAccount
+      - shadowAccount 
+      - ldapPublicKey
+      - hostObject
+    attributes:
+      cn: "user1"
+      uid: "user1"
+      uidNumber: "1111"
+      gidNumber: "1111"
+      homeDirectory: "/home/user1"
+      loginShell: "/bin/bash"
+      gecos: "user1"
+      userPassword: "{{ testdev_ssha }}"
+      shadowLastChange: 0
+      shadowMax: 0
+      shadowWarning: 0
+      sshPublicKey: "{{ testdev_pk }}"
+    bind_dn: "{{ ldap_auth.bind_dn }}" 
+    bind_pw: "{{ ldap_auth.bind_pw }}" 
+
+

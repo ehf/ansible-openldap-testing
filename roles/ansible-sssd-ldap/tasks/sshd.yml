@@ -1,0 +1,35 @@
+---
+#- name: sshd | enable authorized keys lookup script
+#  lineinfile:
+#    path: /etc/ssh/sshd_config
+#    line: 'AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys'
+#  notify:
+#    - restart sshd
+
+#- name: sshd | make authorized keys lookup script run as nobody
+#  lineinfile:
+#    path: /etc/ssh/sshd_config
+#    line: 'AuthorizedKeysCommandUser nobody'
+#  notify:
+#    - restart sshd
+
+- name: sshd | enable authorized keys lookup script
+  blockinfile:
+    path: /etc/ssh/sshd_config
+    insertafter: '^AuthorizedKeysFile'
+    block: |
+      AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys
+      AuthorizedKeysCommandUser nobody
+  notify:
+    - restart sshd
+    
+
+- name: sshd | ensure sshd service is enabled
+  service:
+    name: "{{ sssd_ldap_ssh_service }}"
+    enabled: true
+
+- name: sshd | ensure sshd service is started
+  service:
+    name: "{{ sssd_ldap_ssh_service }}"
+    state: started

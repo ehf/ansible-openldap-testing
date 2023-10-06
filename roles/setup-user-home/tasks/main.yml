@@ -1,0 +1,6 @@
+---
+# tasks file for setup-user-home
+#
+
+- import_tasks: init.yml
+- import_tasks: setup-sample-users.yml
