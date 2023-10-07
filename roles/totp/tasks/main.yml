@@ -62,7 +62,7 @@
 - name: "Copy public key to test user"
   authorized_key:
     user: "{{ item }}"
-    key: "{{ lookup('file', '~/.ssh/id_ed25519_test.pub') }}"
+    key: "{{ testdev_pk }}"
   loop: "{{ local_users }}"
   tags:
     - copy-ssh-keys
