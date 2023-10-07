@@ -1,31 +1,42 @@
 ---
 
-# ansible-playbook -i inventory.txt run-it.yml -b -u ehf --vault-password-file ~/.ogpw
-# ansible-playbook -i inventory.txt run-it.yml -b -u ehf --ask-vault-pass
+# ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt run-it.yml -b -u ehf --vault-password-file ~/.ogpw
+# ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt run-it.yml -b -u ehf --ask-vault-pass
 #
 #  ldapsearch -x -b 'dc=usdata,dc=link' '(objectclass=*)'
 #
+# the following should be installed on the host running the Ansible playbooks/roles:
+## 1. install ansible-core, ansible collections, and supporting software
+## sudo yum -y install ansible-core git python3-ldap \
+##    && ansible-galaxy collection install community.general community.crypto
+## 
+## 2. create ~/.ogpw for making it easier to work with Ansible vault
+## 3. update inventory.txt to match the environment being updated 
+## 4. run "export ANSIBLE_HOST_KEY_CHECKING=False" or prepend "ANSIBLE_HOST_KEY_CHECKING=False" to Ansible command 
 
-
-- hosts: openldap_server
-  gather_facts: True
+- name: "Initialize openldap-server"
+  hosts: openldap_server
+  gather_facts: true
   roles:
     - { role: openldap-server, tags: init-openldap-server }
     - { role: init-ldap-users, tags: init-ldap-users, delegate_to: testdev1 }
 
-- hosts: sssd_client
-  gather_facts: True
+- name: "Initialize sssd_client and related tasks"
+  hosts: sssd_client
+  gather_facts: true
   roles:
     - { role: totp, tags: init-totp }
     - { role: ansible-sssd-ldap, tags: init-sssd-ldap }
     - { role: setup-user-home, tags: setup-user-home }
 
-- hosts: testdev2
-  gather_facts: True
+- name: "Fetch data"
+  hosts: testdev2
+  gather_facts: true
   roles:
     - { role: fetch-auth-data, tags: fetch-auth-data }
 
-#- hosts: testdev1,testdev2
-#  gather_facts: True
-#  roles:
-#    - { role: deploy-auth-data, tags: deploy-auth-data }
+# - name: "Deploy data"
+#   hosts: testdev1,testdev2
+#   gather_facts: True
+#   roles:
+#     - { role: deploy-auth-data, tags: deploy-auth-data }
