@@ -70,6 +70,7 @@
   loop: 
     - openssh-ldap.schema
     - ldapns.schema
+    - rfc2307bis.schema
 
 - name: copy the supporting files
   copy: 

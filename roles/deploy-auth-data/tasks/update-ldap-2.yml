@@ -1,0 +1,50 @@
+---
+
+- name: "install openldap-clients software"
+  dnf:
+    name: [ 'openldap-clients', 'python3-ldap' ]
+    state: present
+
+
+# ldap_entry can't get used to update an existing ldap entry
+# can only be used to initially create ldap entry
+#
+- name: "add user public keys to ldap"
+  ldap_attrs:
+    dn: "uid={{ item.item.pw_name }},ou=People,{{ ldap_search_base }}"
+    attributes:
+      sshPublicKey: "{{ item.content | b64decode | trim }}"
+    bind_dn: "{{ ldap_auth.bind_dn }}"
+    bind_pw: "{{ ldap_auth.bind_pw }}"
+  loop: "{{ hostvars.testdev2.sshpk_content }}"
+  tags:
+    - add-publickey-ldap
+
+
+##
+## "pw_name" is username of file owner of item in sshpubkeys_found.files
+#- name: "add user public keys to ldap"
+#  ldap_attrs:
+#    dn: "uid={{ item.pw_name }},ou=People,{{ ldap_search_base }}"
+#    attributes:
+#      ##sshPublicKey: "{{ lookup('file', '/tmp/fetched/pubkeys/testdev2' + item.path) }}"
+#      sshPublicKey: "{{ lookup('file', '{{ item.path }}') }}"
+#    bind_dn: "{{ ldap_auth.bind_dn }}"
+#    bind_pw: "{{ ldap_auth.bind_pw }}"
+#  loop: "{{ sshpubkeys_found.files }}"
+#  delegate_to: testdev1
+#  tags:
+#    - add-publickey-ldap
+#
+#- name: "remove fetched public keys"
+#  file:
+#    path: /tmp/fetched/pubkeys
+#    state: absent
+#  connection: local
+#  become: no
+#  vars:
+#    ansible_python_interpreter: /opt/homebrew/bin/python3
+#  tags:
+#    - add-publickey-ldap
+
+

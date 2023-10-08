@@ -23,6 +23,13 @@
     bind_dn: "{{ ldap_auth.bind_dn }}" 
     bind_pw: "{{ ldap_auth.bind_pw }}" 
 
+- name: Create parent entry for Netgroup
+  ldap_entry:
+    dn: ou=Netgroup,{{ ldap_search_base }}
+    objectClass: organizationalUnit
+    bind_dn: "{{ ldap_auth.bind_dn }}"
+    bind_pw: "{{ ldap_auth.bind_pw }}"
+
 - name: Create user group 
   ldap_entry: 
     dn: cn=usergrp1,ou=Groups,{{ ldap_search_base }}

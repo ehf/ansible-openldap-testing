@@ -1,0 +1,71 @@
+---
+
+# this will run on host containing pubkeys in user home dirs
+# look for all pubkeys under home dir
+- name: "find ssh public key files"
+  find:
+    paths: /home
+    patterns: "^id_.*pub$"
+    use_regex: yes
+    file_type: file
+    recurse: yes
+    excludes: "mysql,nginx"
+  register: sshpubkeys_found
+  tags:
+    - get-ssh-publickey
+
+- name: "debug sshpubkeys_found"
+  debug:
+    msg: "{{ item }}"
+  loop: "{{ sshpubkeys_found.files }}"
+  tags:
+   - get-ssh-publickey
+
+- name: "slurp pub keys"
+  slurp:
+    src: "{{ item.path }}"
+  loop: "{{ sshpubkeys_found.files }}"
+  register: sshpubkeys_content
+  tags:
+    - get-ssh-publickey
+
+- name: "debug sshpubkeys_content"
+  debug:
+    msg: "{{ item }}"
+  loop: "{{ sshpubkeys_content.results }}"
+
+- name: "set fact for slurped sshpubkeys_content"
+  set_fact:
+    sshpk_content: "{{ sshpubkeys_content.results }}"
+
+#### tried using slurp, but no easy to get file owner; no stat of file(s) during slurp
+#- name: "get content of remote file"
+#  slurp:
+#    src: "{{ item.path }}"
+#  loop: "{{ sshpubkeys_found.files }}"
+#  register: sshpubkeys_content
+
+#- name: "output sshpubkeys_content"
+#  debug: msg="{{ item }}"
+#  loop: "{{ sshpubkeys_content.results }}"
+
+
+### ldap_entry can't get used to update an existing ldap entry
+### can only be used to initially create ldap entry
+#- name: "add user public keys to ldap"
+#  ldap_entry:
+#    dn: "uid={{ item.pw_name }},ou=People,{{ ldap_search_base }}"
+#    objectClass:
+#      - ldapPublicKey
+#    attributes:
+#      sshPublicKey: "{{ item.content | b64decode | trim }}"
+#    bind_dn: "{{ ldap_auth.bind_dn }}"
+#    bind_pw: "{{ ldap_auth.bind_pw }}"
+#    server_uri: "{{ ldap_uri_host }}"
+#  loop: "{{ sshpubkeys_content.results }}"
+#  delegate_to: testdev2
+#  tags:
+#    - add-publickey-ldap
+#
+######
+

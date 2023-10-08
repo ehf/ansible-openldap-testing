@@ -6,8 +6,8 @@
 # all intermediate subdirectories will be created if they do not exist
 - name: "create home dir for sample test dev users"
   file:
-    path: "/home/testdev{{ item }}/.ssh"
-    owner: testdev{{ item }}
+    path: "/home/userdev{{ item }}/.ssh"
+    owner: userdev{{ item }}
     group: testdevs
     mode: '0700'
     state: directory
@@ -17,21 +17,21 @@
 
 - name: "create ssh priv/pub keys for sample test dev users"
   openssh_keypair:
-    path: "/home/testdev{{ item }}/.ssh/id_ed25519"
-    owner: testdev{{ item }}
+    path: "/home/userdev{{ item }}/.ssh/id_ed25519"
+    owner: userdev{{ item }}
     group: testdevs
     mode: '0600' 
     type: ed25519
-    comment: testdev{{ item }}
+    comment: userdev{{ item }}
   loop: "{{ range(1,10,1) | list }}"
   tags:
     - create-testdev-ssh-keys
 
 - name: "create simulated totp files"
   copy:
-    dest: "/home/testdev{{ item }}/.ssh/totp"
-    content: "testdev{{ item }}"
-    owner: testdev{{ item }}
+    dest: "/home/userdev{{ item }}/.ssh/totp"
+    content: "userdev{{ item }}"
+    owner: userdev{{ item }}
     group: testdevs
     mode: '0600'
   loop: "{{ range(1,10,1) | list }}"

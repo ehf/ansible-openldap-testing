@@ -1,0 +1,12 @@
+dn: ou=Netgroup,dc=usdata,dc=link
+objectclass: organizationalUnit
+ou: Netgroup
+
+dn: cn=test_host_1,ou=Netgroup,dc=usdata,dc=link
+objectClass: top    
+objectClass: nisNetgroup    
+cn: test_host_1
+description: test_host_1
+nisNetgroupTriple: (testdev1,,)    
+nisNetgroupTriple: (testdev2,,)    
+nisNetgroupTriple: (testdev3,,)    

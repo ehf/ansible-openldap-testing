@@ -1,0 +1,37 @@
+---
+# tasks file for init-ldap-users
+
+# The below requirements are needed on the host that executes this module.
+# - python3-ldap
+
+- name: "Create test netgroup"
+  ldap_entry:
+    dn: cn=test_host_ng{{ ansible_loop.index }},ou=Netgroup,{{ ldap_search_base }}
+    objectClass:
+      - top
+      - nisNetgroup
+    attributes:
+      cn: "test_host_ng{{ ansible_loop.index }}"
+      description: "test_host_ng{{ ansible_loop.index }}"
+      nisNetgroupTriple: "(testdev{{ range(1,5) | random }},,)"
+    bind_dn: "{{ ldap_auth.bind_dn }}"
+    bind_pw: "{{ ldap_auth.bind_pw }}"
+  loop: "{{ range(10,20,1) | list }}"
+  loop_control:
+    extended: true
+    extended_allitems: false
+
+- name: "add more nisNetgroupTriple attribute to Netgroup entries"
+  ldap_attrs:
+    dn: cn=test_host_ng{{ ansible_loop.index }},ou=Netgroup,{{ ldap_search_base }}
+    attributes:
+      nisNetgroupTriple: "(testdev{{ range(1,5) | random }},,)"
+    bind_dn: "{{ ldap_auth.bind_dn }}"
+    bind_pw: "{{ ldap_auth.bind_pw }}"
+  loop: "{{ range(10,20,1) | list }}"
+  loop_control:
+    extended: true
+    extended_allitems: false
+  tags:
+    - add-netgroup-triple
+

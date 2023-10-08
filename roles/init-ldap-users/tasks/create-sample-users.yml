@@ -18,7 +18,7 @@
 
 - name: "Create test dev users"
   ldap_entry:
-    dn: uid=testdev{{ ansible_loop.index }},ou=People,{{ ldap_search_base }}
+    dn: uid=userdev{{ ansible_loop.index }},ou=People,{{ ldap_search_base }}
     objectClass:
       - top
       - account
@@ -27,13 +27,13 @@
       - ldapPublicKey
       - hostObject
     attributes:
-      cn: "testdev{{ ansible_loop.index }}"
-      uid: "testdev{{ ansible_loop.index }}"
+      cn: "userdev{{ ansible_loop.index }}"
+      uid: "userdev{{ ansible_loop.index }}"
       uidNumber: "{{ item }}"
       gidNumber: "1112"
-      homeDirectory: "/home/testdev{{ ansible_loop.index }}"
+      homeDirectory: "/home/userdev{{ ansible_loop.index }}"
       loginShell: "/bin/bash"
-      gecos: "testdev{{ ansible_loop.index }}"
+      gecos: "userdev{{ ansible_loop.index }}"
       userPassword: "{{ testdev_ssha }}"
       shadowLastChange: 0
       shadowMax: 0
@@ -48,9 +48,9 @@
 # add host attribute to some users 
 - name: "add host attribute to some users"
   ldap_attrs:
-    dn: uid=testdev{{ ansible_loop.index }},ou=People,{{ ldap_search_base }}
+    dn: uid=userdev{{ ansible_loop.index }},ou=People,{{ ldap_search_base }}
     attributes:
-      host: "testdev{{ range(1,5) | random }}"
+      host: "userdev{{ range(1,5) | random }}"
     bind_dn: "{{ ldap_auth.bind_dn }}"
     bind_pw: "{{ ldap_auth.bind_pw }}"
   loop: "{{ range(1112,1122,1) | list }}"

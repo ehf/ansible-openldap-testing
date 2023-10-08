@@ -3,6 +3,9 @@
 # ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt run-it.yml -b -u ehf --vault-password-file ~/.ogpw
 # ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt run-it.yml -b -u ehf --ask-vault-pass
 #
+# ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt run-it.yml -b -u ehf --vault-password-file ~/.ogpw -e "copy_totp=True"
+# ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt run-it.yml -b -u ehf --ask-vault-pass -e "copy_totp=True"
+#
 #  ldapsearch -x -b 'dc=usdata,dc=link' '(objectclass=*)'
 #
 # the following should be installed on the host running the Ansible playbooks/roles:
@@ -35,8 +38,8 @@
   roles:
     - { role: fetch-auth-data, tags: fetch-auth-data }
 
-# - name: "Deploy data"
-#   hosts: testdev1,testdev2
-#   gather_facts: True
-#   roles:
-#     - { role: deploy-auth-data, tags: deploy-auth-data }
+- name: "Deploy data"
+  hosts: openldap_server
+  gather_facts: true
+  roles:
+    - { role: deploy-auth-data, tags: deploy-auth-data }
