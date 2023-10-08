@@ -13,6 +13,7 @@
       - posixGroup
     attributes:
       gidNumber: 1112
+      cn: testdevs
     bind_dn: "{{ ldap_auth.bind_dn }}"
     bind_pw: "{{ ldap_auth.bind_pw }}"
 
