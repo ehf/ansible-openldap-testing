@@ -1,5 +1,9 @@
 ---
 
+# the following is required: 
+# pkg: python3-ldap 
+# collection: ansible-galaxy collection install community.general community.crypto ansible.posix ansible.utils
+
 # ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt run-it.yml -b -u ehf --vault-password-file ~/.ogpw
 # ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt run-it.yml -b -u ehf --ask-vault-pass
 #

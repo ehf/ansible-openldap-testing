@@ -18,6 +18,7 @@
   debug:
     msg: "{{ item }}"
   loop: "{{ sshpubkeys_found.files }}"
+  when: debug_me | bool
   tags:
    - get-ssh-publickey
 
@@ -33,6 +34,7 @@
   debug:
     msg: "{{ item }}"
   loop: "{{ sshpubkeys_content.results }}"
+  when: debug_me | bool
 
 - name: "set fact for slurped sshpubkeys_content"
   set_fact:

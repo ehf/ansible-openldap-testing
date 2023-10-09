@@ -1,0 +1,9 @@
+--- 
+
+# ansible-galaxy install -r requirements.yml
+#
+collections:
+  - name: community.general 
+  - name: community.crypto
+  - name: ansible.posix
+  - name: ansible.utils

@@ -16,13 +16,14 @@
   debug:
     msg: "{{ item }}"
   loop: "{{ totpfiles_found.files }}"
+  when: debug_me | bool
   tags:
     - get-totp-files
 
 - name: "fetch totp files"
   fetch:
     src: "{{ item.path }}"
-    dest: /tmp/fetched/totp
+    dest: "{{ fetch_totp_dir }}"
   loop: "{{ totpfiles_found.files }}"
   tags:
     - get-totp-files

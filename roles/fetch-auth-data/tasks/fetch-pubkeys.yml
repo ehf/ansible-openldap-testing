@@ -18,13 +18,14 @@
   debug:
     msg: "{{ item }}"
   loop: "{{ sshpubkeys_found.files }}"
+  when: debug_me | bool
   tags:
     - get-ssh-publickey
 
 - name: "fetch pub keys"
   fetch:
     src: "{{ item.path }}"
-    dest: /tmp/fetched/pubkeys
+    dest: "{{ fetch_pk_dir }}"
   loop: "{{ sshpubkeys_found.files }}"
   tags:
     - get-ssh-publickey

@@ -63,7 +63,7 @@
 
 - name: "find fetched ssh public key files"
   find:
-    paths: /tmp/fetched/pubkeys
+    paths: "{{ fetched_pk_dir }}"
     patterns: "^id_.*pub$"
     use_regex: yes
     file_type: file
@@ -95,9 +95,8 @@
 ## "pw_name" is username of file owner of item in sshpubkeys_found.files
 - name: "add user public keys to ldap"
   ldap_attrs:
-    dn: "uid={{ item.pw_name }},ou=People,{{ ldap_search_base }}"
+    dn: "uid={{ [lookup('ansible.utils.index_of', item.path | split('/') , 'eq', '.ssh') - 1] | map( 'extract', (item.path | dirname | split('/')) ) }},ou=People,{{ ldap_search_base }}"
     attributes:
-      ##sshPublicKey: "{{ lookup('file', '/tmp/fetched/pubkeys/testdev2' + item.path) }}"
       sshPublicKey: "{{ lookup('file', '{{ item.path }}') }}"
     bind_dn: "{{ ldap_auth.bind_dn }}"
     bind_pw: "{{ ldap_auth.bind_pw }}"
@@ -108,15 +107,11 @@
 
 - name: "remove fetched public keys"
   file:
-    path: /tmp/fetched/pubkeys
+    path: "{{ fetch_pk_dir }}"
     state: absent
   connection: local
   become: no
-  vars:
-    ansible_python_interpreter: /opt/homebrew/bin/python3
   tags:
     - add-publickey-ldap
-
-
 
 

@@ -1,4 +1,7 @@
 
+debug_me: False
+fetch_pk_dir: /tmp/fetched/pubkeys
+fetch_totp_dir: /tmp/fetched/totp
 ldap_domain_name: usdata.link
 ldap_search_base: "dc={{ ldap_domain_name.split('.')[0] }},dc={{ ldap_domain_name.split('.')[1] }}"
 

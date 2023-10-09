@@ -2,5 +2,5 @@
 # tasks file for fetch-auth-data
 
 - import_tasks: slurp-pubkeys.yml
-- import_tasks: get-pubkeys.yml
-- import_tasks: get-totp.yml
+- import_tasks: fetch-pubkeys.yml
+- import_tasks: fetch-totp.yml
