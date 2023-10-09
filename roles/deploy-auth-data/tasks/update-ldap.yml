@@ -63,7 +63,7 @@
 
 - name: "find fetched ssh public key files"
   find:
-    paths: "{{ fetched_pk_dir }}"
+    paths: "{{ fetch_pk_dir }}"
     patterns: "^id_.*pub$"
     use_regex: yes
     file_type: file
@@ -81,7 +81,7 @@
     msg: "{{ item.path | split('/') }} "
   loop: "{{ sshpubkeys_found.files }}"
   register: sshpubkeys_split
-  delegate_to: localhost
+  when: debug_me | bool
   tags:
     - check-local-pubkeys
 

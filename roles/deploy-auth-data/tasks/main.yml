@@ -6,6 +6,6 @@
   debug:
     msg: "{{ hostvars.testdev2.sshpk_content }}"
 
-#- import_tasks: update-ldap.yml
+- import_tasks: update-ldap.yml
 - import_tasks: distribute-totp-files.yml
 
