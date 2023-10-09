@@ -95,7 +95,7 @@
 ## "pw_name" is username of file owner of item in sshpubkeys_found.files
 - name: "add user public keys to ldap"
   ldap_attrs:
-    dn: "uid={{ [lookup('ansible.utils.index_of', item.path | split('/') , 'eq', '.ssh') - 1] | map( 'extract', (item.path | dirname | split('/')) ) }},ou=People,{{ ldap_search_base }}"
+    dn: "uid={{ [lookup('ansible.utils.index_of', item.path | split('/') , 'eq', '.ssh', wantlist=False) - 1] | map( 'extract', (item.path | dirname | split('/')) ) | join }},ou=People,{{ ldap_search_base }}"
     attributes:
       sshPublicKey: "{{ lookup('file', '{{ item.path }}') }}"
     bind_dn: "{{ ldap_auth.bind_dn }}"
