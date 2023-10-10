@@ -51,7 +51,7 @@
   ldap_attrs:
     dn: uid=userdev{{ ansible_loop.index }},ou=People,{{ ldap_search_base }}
     attributes:
-      host: "userdev{{ range(1,5) | random }}"
+      host: "test_host_ng{{ range(1,10) | random }}"
     bind_dn: "{{ ldap_auth.bind_dn }}"
     bind_pw: "{{ ldap_auth.bind_pw }}"
   loop: "{{ range(1112,1122,1) | list }}"

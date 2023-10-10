@@ -2,7 +2,8 @@
 
 # the following is required: 
 # pkg: python3-ldap 
-# collection: ansible-galaxy collection install community.general community.crypto ansible.posix ansible.utils
+# ansible collections: community.general community.crypto ansible.posix ansible.utils
+
 
 # ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt run-it.yml -b -u ehf --vault-password-file ~/.ogpw
 # ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.txt run-it.yml -b -u ehf --ask-vault-pass
@@ -12,11 +13,11 @@
 #
 #  ldapsearch -x -b 'dc=usdata,dc=link' '(objectclass=*)'
 #
-# the following should be installed on the host running the Ansible playbooks/roles:
+
+# the following should be installed on the host running the Ansible playbook:
 ## 1. install ansible-core, ansible collections, and supporting software
-## sudo yum -y install ansible-core git python3-ldap \
-##    && ansible-galaxy collection install community.general community.crypto
-## 
+## sudo yum -y install ansible-core git python3-ldap 
+## ansible-galaxy install -r requirements.yml 
 ## 2. create ~/.ogpw for making it easier to work with Ansible vault
 ## 3. update inventory.txt to match the environment being updated 
 ## 4. run "export ANSIBLE_HOST_KEY_CHECKING=False" or prepend "ANSIBLE_HOST_KEY_CHECKING=False" to Ansible command 

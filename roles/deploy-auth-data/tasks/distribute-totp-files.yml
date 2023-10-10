@@ -9,7 +9,8 @@
     recurse: yes
     excludes: "mysql,nginx"
   register: totpfiles_found
-  when: inventory_hostname in groups['sssd_client']
+  delegate_to: localhost
+  become: no
   tags:
     - distribute-totp-files
 
@@ -17,6 +18,5 @@
   debug:
     msg: "{{ item }}"
   loop: "{{ totpfiles_found.files }}"
-  when: inventory_hostname in groups['sssd_client']
   tags:
     - distribute-totp-files
