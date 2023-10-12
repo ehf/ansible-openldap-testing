@@ -1,0 +1,69 @@
+---
+
+- name: "LDAP :: get ldap uid and host attrs"
+  community.general.ldap_search:
+    dn: "ou=People,{{ ldap_search_base }}"
+    scope: onelevel
+    attrs:
+      - uid
+      - host
+    server_uri: "ldaps://{{ ldap_uri_host }}"
+    validate_certs: false
+    bind_dn: "{{ ldap_auth.bind_dn }}"
+    bind_pw: "{{ ldap_auth.bind_pw }}"
+  register: ldap_uid_and_host
+  tags:
+    - get-uid-and-host
+    - fetch-netgroup-info
+
+- name: "debug register ldap_uid_and_host"
+  debug:
+    var: ldap_uid_and_host.results
+  tags:
+    - get-uid-and-host
+    - fetch-netgroup-info
+
+- name: "LDAP :: get netgroup info"
+  community.general.ldap_search:
+    dn: "cn={{ item.host }},ou=Netgroup,{{ ldap_search_base }}"
+    scope: onelevel
+    attrs:
+      - cn
+      - nisNetgroupTriple
+    server_uri: "ldaps://{{ ldap_uri_host }}"
+    validate_certs: false
+    filter: "(objectclass=nisNetgroup)"
+    bind_dn: "{{ ldap_auth.bind_dn }}"
+    bind_pw: "{{ ldap_auth.bind_pw }}"
+  loop: "{{ ldap_uid_and_host.results }}"
+  register: ldap_uid_and_netgroup_hosts
+  when: item.host is defined
+  tags:
+    - get-uid-and-host
+    - fetch-netgroup-info
+
+- name: "debug register ldap_uid_and_netgroup_hosts"
+  debug:
+    var: ldap_uid_and_netgroup_hosts.results
+  tags:
+    - get-uid-and-host
+    - fetch-netgroup-info
+
+- name: "GETENT :: getent netgroup module"
+  ansible.builtin.getent:
+    database: netgroup
+    key: "{{ item.host }}"
+  loop: "{{ ldap_uid_and_host.results }}"
+  register: getent_netgroup_hosts
+  when: item.host is defined
+  tags:
+    - get-netgroups
+    - fetch-netgroup-info
+
+- name: "debug register getent_netgroup_hosts"
+  debug:
+    var: getent_netgroup_hosts.results
+  tags:
+    - get-netgroups
+    - fetch-netgroup-info
+
