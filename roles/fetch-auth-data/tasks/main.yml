@@ -3,5 +3,4 @@
 
 - import_tasks: init.yml
 - import_tasks: slurp-pubkeys.yml
-- import_tasks: fetch-pubkeys.yml
 - import_tasks: fetch-totp.yml
