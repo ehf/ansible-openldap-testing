@@ -49,6 +49,23 @@
     - get-uid-and-host
     - fetch-netgroup-info
 
+- name: "GETENT :: COMMAND "
+  shell: " getent netgroup {{ item.1 }} | tr -d ')(' | tr -d ',' "
+  ##loop: "{{ ldap_uid_and_host.results }}"
+  with_subelements:
+    - "{{ ldap_uid_and_host.results }}"
+    - host
+  register: getent_command_hosts
+  when: item.1 is defined
+  tags:
+    - fetch-netgroup-info
+
+- name: "GETENT :: debug getent_command_hosts"
+  debug:
+    var: getent_command_hosts
+  tags:
+     - fetch-netgroup-info
+
 - name: "GETENT :: getent netgroup module"
   ansible.builtin.getent:
     database: netgroup
@@ -59,6 +76,20 @@
   tags:
     - get-netgroups
     - fetch-netgroup-info
+
+#- name: "GETENT :: getent netgroup module"
+#  ansible.builtin.getent:
+#    database: netgroup
+#    key: "{{ item.1 }}"
+#  ##loop: "{{ ldap_uid_and_host.results }}"
+#  with_subelements:
+#    - "{{ ldap_uid_and_host.results }}"
+#    - host
+#  register: getent_netgroup_hosts
+#  #when: item.0.host is defined
+#  tags:
+#    - get-netgroups
+#    - fetch-netgroup-info
 
 - name: "debug register getent_netgroup_hosts"
   debug:
