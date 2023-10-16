@@ -6,6 +6,11 @@
   debug:
     msg: "{{ hostvars.testdev2.sshpk_content }}"
 
+#- name: "debug totpfiles_content"
+#  debug:
+#    msg: "{{ hostvars.testdev2.totp_content }}"
+
+
 - import_tasks: init.yml
 - import_tasks: update-ldap-slurp.yml
 - import_tasks: distribute-totp-files.yml

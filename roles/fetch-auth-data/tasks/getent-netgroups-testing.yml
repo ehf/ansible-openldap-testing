@@ -15,6 +15,7 @@
   register: ldap_uid_and_host
   tags:
     - get-uid-and-host
+    - fetch-netgroup-info-ldap
     - fetch-netgroup-info
 
 - name: "debug register ldap_uid_and_host"
@@ -22,6 +23,7 @@
     var: ldap_uid_and_host.results
   tags:
     - get-uid-and-host
+    - fetch-netgroup-info-ldap
     - fetch-netgroup-info
 
 - name: "LDAP :: get netgroup info"
@@ -41,23 +43,39 @@
   when: item.host is defined
   tags:
     - get-uid-and-host
-    - fetch-netgroup-info
+    - fetch-netgroup-info-ldap
 
 - name: "debug register ldap_uid_and_netgroup_hosts"
   debug:
     var: ldap_uid_and_netgroup_hosts.results
   tags:
     - get-uid-and-host
-    - fetch-netgroup-info
+    - fetch-netgroup-info-ldap
+
+
+#- name: "GETENT :: COMMAND "
+#  shell: " getent netgroup {{ item }} | tr -d ')(' | tr -d ',' "
+#  ##loop: "{{ ldap_uid_and_host.results | json_query('*.host') }}"
+#  with_items: "{{ ldap_uid_and_host.results | json_query('*.host') }}"
+#  register: getent_command_hosts_jquery
+#  tags:
+#    - fetch-netgroup-info
+#
+#- name: "debug getent_command_hosts_jquery"
+#  debug:
+#    var: getent_command_hosts_jquery
+#  tags:
+#    - fetch-netgroup-info
 
 - name: "GETENT :: COMMAND "
-  shell: " getent netgroup {{ item.1 }} | tr -d ')(' | tr -d ',' "
+  shell: " getent netgroup {{ item }} | awk '{$1=\"\"; print $0}' | xargs | tr -d ')(' | tr -d ',' | python3 -c \"import sys; print(sys.stdin.readline().strip().split(' '))\" "
+  ######shell: " getent netgroup {{ item }} | awk '{$1=\"\"; print $0}' | xargs | tr -d ')(' | tr -d ',' "
+  ####shell: " getent netgroup {{ item }} | tr -d ')(' | tr -d ',' "
+  ##shell: " getent netgroup {{ item.host }} | tr -d ')(' | tr -d ',' "
   ##loop: "{{ ldap_uid_and_host.results }}"
-  with_subelements:
-    - "{{ ldap_uid_and_host.results }}"
-    - host
+  with_items: "{{ ldap_uid_and_host.results | json_query('[*].host') }}"
   register: getent_command_hosts
-  when: item.1 is defined
+  ##when: item.host is defined
   tags:
     - fetch-netgroup-info
 
@@ -67,13 +85,18 @@
   tags:
      - fetch-netgroup-info
 
+
 - name: "GETENT :: getent netgroup module"
   ansible.builtin.getent:
     database: netgroup
-    key: "{{ item.host }}"
-  loop: "{{ ldap_uid_and_host.results }}"
+    key: "{{ item }}"
+  ##loop: "{{ ldap_uid_and_host.results }}"
+  with_items: "{{ ldap_uid_and_host.results | json_query('[*].host') }}"
+#  with_subelements:
+#    - "{{ ldap_uid_and_host.results }}"
+#    - host
   register: getent_netgroup_hosts
-  when: item.host is defined
+#  when: item.host.1 is defined
   tags:
     - get-netgroups
     - fetch-netgroup-info
@@ -99,3 +122,24 @@
     - get-netgroups
     - fetch-netgroup-info
 
+
+- name: "getent hosts added to inventory"
+  ansible.builtin.add_host:
+    name: "{{ item }}"
+    groups: "{{ item.ansible_facts.getent_netgroup }}"
+    ##groups: "{{ item | json_query('ansible_facts.getent_netgroup.*') }}"
+  ##with_items: "{{ getent_netgroup_hosts.results | json_query('ansible_facts.getent_netgroup.*') }}"
+  with_items: "{{ getent_netgroup_hosts.results }}"
+  ##with_subelements:
+  ##  - "{{ getent_command_hosts.results }}"
+  ##  - stdout_lines
+  tags:
+     - fetch-netgroup-info
+
+#            "ansible_facts": {
+#                "getent_netgroup": {
+#                    "test_host_ng6": [
+#                        "(testdev1,,)",
+#                        "(testdev4,,)",
+#                        "(testdev3,,)"
+#                    ]
