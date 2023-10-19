@@ -26,31 +26,31 @@
     - fetch-netgroup-info-ldap
     - fetch-netgroup-info
 
-- name: "LDAP :: get netgroup info"
-  community.general.ldap_search:
-    dn: "cn={{ item.host }},ou=Netgroup,{{ ldap_search_base }}"
-    scope: onelevel
-    attrs:
-      - cn
-      - nisNetgroupTriple
-    server_uri: "ldaps://{{ ldap_uri_host }}"
-    filter: "(objectclass=nisNetgroup)"
-    bind_dn: "{{ ldap_auth.bind_dn }}"
-    bind_pw: "{{ ldap_auth.bind_pw }}"
-    validate_certs: false
-  loop: "{{ ldap_uid_and_host.results }}"
-  register: ldap_uid_and_netgroup_hosts
-  when: item.host is defined
-  tags:
-    - get-uid-and-host
-    - fetch-netgroup-info-ldap
-
-- name: "debug register ldap_uid_and_netgroup_hosts"
-  debug:
-    var: ldap_uid_and_netgroup_hosts.results
-  tags:
-    - get-uid-and-host
-    - fetch-netgroup-info-ldap
+#- name: "LDAP :: get netgroup info"
+#  community.general.ldap_search:
+#    dn: "cn={{ item }},ou=Netgroup,{{ ldap_search_base }}"
+#    scope: onelevel
+#    attrs:
+#      - cn
+#      - nisNetgroupTriple
+#    server_uri: "ldaps://{{ ldap_uri_host }}"
+#    filter: "(objectclass=nisNetgroup)"
+#    bind_dn: "{{ ldap_auth.bind_dn }}"
+#    bind_pw: "{{ ldap_auth.bind_pw }}"
+#    validate_certs: false
+#  with_items: "{{ ldap_uid_and_host.results | json_query('[*].host') }}"
+#  register: ldap_uid_and_netgroup_hosts
+#  #when: item.host is defined
+#  tags:
+#    - get-uid-and-host
+#    - fetch-netgroup-info-ldap
+#
+#- name: "debug register ldap_uid_and_netgroup_hosts"
+#  debug:
+#    var: ldap_uid_and_netgroup_hosts.results
+#  tags:
+#    - get-uid-and-host
+#    - fetch-netgroup-info-ldap
 
 
 #- name: "GETENT :: COMMAND "

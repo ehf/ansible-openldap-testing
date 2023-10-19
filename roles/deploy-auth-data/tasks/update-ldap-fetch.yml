@@ -1,10 +1,5 @@
 ---
 
-- name: "install openldap-clients software"
-  dnf: 
-    name: [ 'openldap-clients', 'python3-ldap' ]
-    state: present
-
 - name: "find fetched ssh public key files"
   find:
     paths: "{{ fetch_pk_dir }}"
@@ -34,8 +29,10 @@
     dn: "uid={{ [lookup('ansible.utils.index_of', item.path | split('/') , 'eq', '.ssh', wantlist=False) - 1] | map( 'extract', (item.path | dirname | split('/')) ) | join }},ou=People,{{ ldap_search_base }}"
     attributes:
       sshPublicKey: "{{ lookup('file', '{{ item.path }}') }}"
+    server_uri: "ldaps://{{ ldap_uri_host }}"
     bind_dn: "{{ ldap_auth.bind_dn }}"
     bind_pw: "{{ ldap_auth.bind_pw }}"
+    validate_certs: false
   loop: "{{ sshpubkeys_found.files }}"
   tags:
     - add-publickey-ldap
