@@ -1,11 +1,5 @@
 ---
 
-- name: "install openldap-clients software"
-  dnf:
-    name: [ 'openldap-clients', 'python3-ldap' ]
-    state: present
-
-
 # ldap_entry can't get used to update an existing ldap entry
 # can only be used to initially create ldap entry
 #
@@ -14,8 +8,10 @@
     dn: "uid={{ item.item.pw_name }},ou=People,{{ ldap_search_base }}"
     attributes:
       sshPublicKey: "{{ item.content | b64decode | trim }}"
+    server_uri: "ldaps://{{ ldap_uri_host }}"
     bind_dn: "{{ ldap_auth.bind_dn }}"
     bind_pw: "{{ ldap_auth.bind_pw }}"
+    validate_certs: false
   loop: "{{ hostvars.testdev2.sshpk_content }}"
   tags:
     - add-publickey-ldap
