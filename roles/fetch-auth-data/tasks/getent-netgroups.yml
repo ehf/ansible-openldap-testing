@@ -15,6 +15,7 @@
   register: ldap_uid_and_host
   tags:
     - get-uid-and-host
+    - fetch-netgroup-info-ldap
     - fetch-netgroup-info
 
 - name: "debug register ldap_uid_and_host"
@@ -22,80 +23,40 @@
     var: ldap_uid_and_host.results
   tags:
     - get-uid-and-host
+    - fetch-netgroup-info-ldap
     - fetch-netgroup-info
-
-- name: "LDAP :: get netgroup info"
-  community.general.ldap_search:
-    dn: "cn={{ item.host }},ou=Netgroup,{{ ldap_search_base }}"
-    scope: onelevel
-    attrs:
-      - cn
-      - nisNetgroupTriple
-    server_uri: "ldaps://{{ ldap_uri_host }}"
-    filter: "(objectclass=nisNetgroup)"
-    bind_dn: "{{ ldap_auth.bind_dn }}"
-    bind_pw: "{{ ldap_auth.bind_pw }}"
-    validate_certs: false
-  loop: "{{ ldap_uid_and_host.results }}"
-  register: ldap_uid_and_netgroup_hosts
-  when: item.host is defined
-  tags:
-    - get-uid-and-host
-    - fetch-netgroup-info
-
-- name: "debug register ldap_uid_and_netgroup_hosts"
-  debug:
-    var: ldap_uid_and_netgroup_hosts.results
-  tags:
-    - get-uid-and-host
-    - fetch-netgroup-info
-
-- name: "GETENT :: COMMAND "
-  shell: " getent netgroup {{ item.1 }} | tr -d ')(' | tr -d ',' "
-  ##loop: "{{ ldap_uid_and_host.results }}"
-  with_subelements:
-    - "{{ ldap_uid_and_host.results }}"
-    - host
-  register: getent_command_hosts
-  when: item.1 is defined
-  tags:
-    - fetch-netgroup-info
-
-- name: "GETENT :: debug getent_command_hosts"
-  debug:
-    var: getent_command_hosts
-  tags:
-     - fetch-netgroup-info
 
 - name: "GETENT :: getent netgroup module"
   ansible.builtin.getent:
     database: netgroup
-    key: "{{ item.host }}"
-  loop: "{{ ldap_uid_and_host.results }}"
+    key: "{{ item }}"
+    fail_key: False
+  with_items: "{{ ldap_uid_and_host.results | json_query('[*].host') }}"
   register: getent_netgroup_hosts
-  when: item.host is defined
   tags:
     - get-netgroups
     - fetch-netgroup-info
-
-#- name: "GETENT :: getent netgroup module"
-#  ansible.builtin.getent:
-#    database: netgroup
-#    key: "{{ item.1 }}"
-#  ##loop: "{{ ldap_uid_and_host.results }}"
-#  with_subelements:
-#    - "{{ ldap_uid_and_host.results }}"
-#    - host
-#  register: getent_netgroup_hosts
-#  #when: item.0.host is defined
-#  tags:
-#    - get-netgroups
-#    - fetch-netgroup-info
 
 - name: "debug register getent_netgroup_hosts"
   debug:
     var: getent_netgroup_hosts.results
   tags:
     - get-netgroups
+    - fetch-netgroup-info
+
+- name: "debug register getent_netgroup_hosts"
+  debug:
+    msg: "{{ item.ansible_facts.getent_netgroup.keys()  }}  {{ item.ansible_facts.getent_netgroup.values() | list | flatten | trim | replace('(', '') | replace(')', '') | replace(',,', '') }}"
+  loop: "{{ getent_netgroup_hosts.results }}"
+  tags:
+    - get-netgroups
+    - fetch-netgroup-info
+
+- include_tasks: add-hosts.yml
+  with_items:
+    - "{{ getent_netgroup_hosts.results }}"
+  loop_control:
+    loop_var: outside_item
+  tags:
     - fetch-netgroup-info
 

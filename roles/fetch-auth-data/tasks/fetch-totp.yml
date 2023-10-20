@@ -51,3 +51,19 @@
     - get-totp-files
 
 
+#- name: Sync Pull task 
+#  hosts: "{{groups['app'][0]}}"
+#  user: myusr
+#  tasks:
+#    - name: Copy the file from app01 to app02 using Pull Method
+#      tags: sync-pull
+#      synchronize:
+#        src: "{{ item }}"
+#        dest: "{{ item }}"
+#        mode: pull
+#      delegate_to: "{{groups['app'][1]}}"
+#      register: syncfile
+#      run_once: true
+#      with_items:
+#       - "/tmp/app01-to-app02.txt"
+
