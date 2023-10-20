@@ -1,0 +1,45 @@
+---
+
+- name: "find totp files"
+  find:
+    paths: /home
+    patterns: "^totp$"
+    use_regex: yes
+    file_type: file
+    recurse: yes
+    excludes: "mysql,nginx"
+  register: totpfiles_found
+  delegate_to: localhost
+  become: no
+  tags:
+    - distribute-totp-files
+
+- name: "debug totpfiles_found"
+  debug:
+    msg: "{{ item }}"
+  loop: "{{ totpfiles_found.files }}"
+  tags:
+    - distribute-totp-files
+
+- name: "debug hostvars.testdev2.totpfiles_content"
+  debug:
+    var: hostvars.testdev2.totpfiles_content
+  tags:
+    - distribute-totp-files
+
+- include_tasks: dist-totp.yml
+  with_items:
+    - "{{ hostvars.testdev2.ldap_uid_and_host_content }}"
+  loop_control:
+    loop_var: outside_dist_item
+  tags:
+    - distribute-totp-files
+
+#- name: "copy totp file content"
+#  copy:
+#    content: "{{ item.content | b64decode | trim }}"
+#    dest: /home/{{ item.item.pw_name }}/.ssh/totp
+#    owner: "{{ item.item.pw_name }}"
+#    mode: '0600'
+#  when: inventory_hostname in
+#  loop: "{{ hostvars.testdev2.totpfiles_content }}"
