@@ -1,16 +1,19 @@
 ---
-
+ 
 - name: "distribute totp content per user and netgroup"
   copy:
     content: "{{ item.content | b64decode | trim }}"
     dest: /home/{{ item.item.pw_name }}/.ssh/totp
     owner: "{{ item.item.pw_name }}"
     mode: '0600'
-  with_items: "{{ hostvars.testdev2.totpfiles_content }}"
+  with_items:
+    - "{{ hostvars.testdev2.totpfiles_content.results }}"
   when:
-    - inventory_hostname in groups[outside_dist_item.host]
-    - "'{{ item.item.pw_name }}' == '{{ outside_dist_item.uid }}'"
+    - outside_dist_item.host is subset group_names
+    - item.item.pw_name in uid_list
+    #- inventory_hostname in groups[outside_dist_item.host]
+  vars:
+    uid_list: "{{ outside_dist_item.uid | trim | split }}"
   tags:
     - distribute-totp-files
-
 
