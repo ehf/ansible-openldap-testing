@@ -26,6 +26,13 @@
     - fetch-netgroup-info-ldap
     - fetch-netgroup-info
 
+- name: "set fact for ldap_uid_and_host"
+  set_fact:
+    ldap_uid_and_host_content: "{{ ldap_uid_and_host.results }}"
+  tags:
+    - get-uid-and-host
+    - fetch-netgroup-info
+
 - name: "GETENT :: getent netgroup module"
   ansible.builtin.getent:
     database: netgroup

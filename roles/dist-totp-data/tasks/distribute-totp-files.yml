@@ -1,25 +1,25 @@
 ---
 
-- name: "find totp files"
-  find:
-    paths: /home
-    patterns: "^totp$"
-    use_regex: yes
-    file_type: file
-    recurse: yes
-    excludes: "mysql,nginx"
-  register: totpfiles_found
-  delegate_to: localhost
-  become: no
-  tags:
-    - distribute-totp-files
+#- name: "find totp files"
+#  find:
+#    paths: /home
+#    patterns: "^totp$"
+#    use_regex: yes
+#    file_type: file
+#    recurse: yes
+#    excludes: "mysql,nginx"
+#  register: totpfiles_found
+#  delegate_to: localhost
+#  become: no
+#  tags:
+#    - distribute-totp-files
 
-- name: "debug totpfiles_found"
-  debug:
-    msg: "{{ item }}"
-  loop: "{{ totpfiles_found.files }}"
-  tags:
-    - distribute-totp-files
+#- name: "debug totpfiles_found"
+#  debug:
+#    msg: "{{ item }}"
+#  loop: "{{ totpfiles_found.files }}"
+#  tags:
+#    - distribute-totp-files
 
 - name: "debug hostvars.testdev2.totpfiles_content"
   debug:
