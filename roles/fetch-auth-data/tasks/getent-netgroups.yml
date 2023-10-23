@@ -67,3 +67,5 @@
   tags:
     - fetch-netgroup-info
 
+- debug: var=groups
+- debug: var=group_names

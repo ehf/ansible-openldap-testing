@@ -21,11 +21,11 @@
 #  tags:
 #    - distribute-totp-files
 
-- name: "debug hostvars.testdev2.totpfiles_content"
-  debug:
-    var: hostvars.testdev2.totpfiles_content
-  tags:
-    - distribute-totp-files
+#- name: "debug hostvars.testdev2.totpfiles_content"
+#  debug:
+#    var: hostvars.testdev2.totpfiles_content
+#  tags:
+#    - distribute-totp-files
 
 - include_tasks: dist-totp.yml
   with_items:
@@ -35,11 +35,3 @@
   tags:
     - distribute-totp-files
 
-#- name: "copy totp file content"
-#  copy:
-#    content: "{{ item.content | b64decode | trim }}"
-#    dest: /home/{{ item.item.pw_name }}/.ssh/totp
-#    owner: "{{ item.item.pw_name }}"
-#    mode: '0600'
-#  when: inventory_hostname in
-#  loop: "{{ hostvars.testdev2.totpfiles_content }}"

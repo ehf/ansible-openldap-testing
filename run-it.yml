@@ -73,11 +73,11 @@
   roles:
     - { role: deploy-auth-data, tags: deploy-auth-data }
 
-#- name: "Distribute totp data"
-#  hosts: sssd_client
-#  vars:
-#    ansible_python_interpreter: /usr/bin/python3
-#  gather_facts: true
-#  roles:
-#    - { role: dist-totp-data, tags: dist-totp-data }
+- name: "Distribute totp data"
+  hosts: sssd_client
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  gather_facts: true
+  roles:
+    - { role: dist-totp-data, tags: dist-totp-data }
 
