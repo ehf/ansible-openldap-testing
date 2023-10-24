@@ -56,7 +56,7 @@
     - { role: ansible-sssd-ldap, tags: init-sssd-ldap }
     - { role: setup-user-home, tags: setup-user-home }
 
-- name: "Fetch data"
+- name: "Fetch auth data"
   hosts: testdev2
   vars:
     ansible_python_interpreter: /usr/bin/python3
@@ -65,7 +65,7 @@
     - { role: fetch-auth-data, tags: fetch-auth-data }
 
 # was openldap_server
-- name: "Deploy data"
+- name: "Deploy auth data"
   hosts: localhost
   vars:
     ansible_python_interpreter: /usr/bin/python3

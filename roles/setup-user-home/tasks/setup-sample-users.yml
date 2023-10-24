@@ -11,7 +11,7 @@
     group: testdevs
     mode: '0700'
     state: directory
-  loop: "{{ range(1,10,1) | list }}"
+  loop: "{{ range(1,11,1) | list }}"
   tags:
     - create-testdev-home-dirs
 
@@ -23,7 +23,7 @@
     mode: '0600' 
     type: ed25519
     comment: userdev{{ item }}
-  loop: "{{ range(1,10,1) | list }}"
+  loop: "{{ range(1,11,1) | list }}"
   tags:
     - create-testdev-ssh-keys
 
@@ -34,7 +34,8 @@
     owner: userdev{{ item }}
     group: testdevs
     mode: '0600'
-  loop: "{{ range(1,10,1) | list }}"
+  loop: "{{ range(1,11,1) | list }}"
+  when: inventory_hostname in groups['dummy_totp']
   tags:
     - create-testdev-totp
     

@@ -1,8 +1,5 @@
 ---
 
-# ldap_entry can't get used to update an existing ldap entry
-# can only be used to initially create ldap entry
-#
 - name: "add user public keys to ldap"
   ldap_attrs:
     dn: "uid={{ item.item.pw_name }},ou=People,{{ ldap_search_base }}"
