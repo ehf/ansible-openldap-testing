@@ -36,6 +36,7 @@
         - google-cloud-sdk
       tags:
         - disable-google-repos
+        - init-me
 
 - name: "Initialize openldap-server"
   hosts: openldap_server
@@ -43,8 +44,8 @@
     ansible_python_interpreter: /usr/bin/python3
   gather_facts: true
   roles:
-    - { role: openldap-server, tags: init-openldap-server }
-    - { role: init-ldap-users, tags: init-ldap-users }      ###, delegate_to: testdev1 }
+    - { role: openldap-server, tags: "init-openldap-server, init-me" }
+    - { role: init-ldap-users, tags: "init-ldap-users, init-me" }
 
 - name: "Initialize sssd_client and related tasks"
   hosts: sssd_client
@@ -53,8 +54,8 @@
   gather_facts: true
   roles:
     - { role: totp, tags: init-totp }
-    - { role: ansible-sssd-ldap, tags: init-sssd-ldap }
-    - { role: setup-user-home, tags: setup-user-home }
+    - { role: ansible-sssd-ldap, tags: "init-sssd-ldap, init-me" }
+    - { role: setup-user-home, tags: "setup-user-home, init-me" }
 
 - name: "Fetch auth data"
   hosts: testdev2
